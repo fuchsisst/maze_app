@@ -3,8 +3,8 @@ from PIL import Image
 
 # Length and width are determined by “cells”; when determining them,
 # it is taken into account that borders are also included in these values
-length = 100
-width = 100
+length = 101
+width = 101
 
 # A list that will contain the final labyrinth
 maze = []
@@ -15,7 +15,6 @@ def mazeGenerationFunc(length, width, maze):
     # Top und bottom borders of the maze, the values do not change.
     # Used only when displaying the end maze
     top_bottom_border = ['#']*(width-4) 
-    print(top_bottom_border)
     maze.append(top_bottom_border)
      
     
@@ -27,18 +26,16 @@ def mazeGenerationFunc(length, width, maze):
     def subsetGenerationFunc(row):
         row_first_subset = row[0]
         
-        for i, value in enumerate(row):
+        for i in range(0, len(row), 2):
             if bool(random.randint(0,1)):
                 if i < len(row)-1: 
                     row[i+1] = row_first_subset
+                    row[i+2] = row_first_subset
                 else:
                     break
             else:
                 if i < len(row)-1:
                     row[i+1] = '#'
-                else:
-                    break
-                if i < len(row)-2:
                     row_first_subset = row[i+2]
                 else:
                     break
@@ -47,12 +44,40 @@ def mazeGenerationFunc(length, width, maze):
     
     # Lower borders generation function.
     def lowerBorderGenerationFunc(row_1):
+        
+        # Создаем списки для хранения уникальных цифр и их количеств
+        unique_digits = []
+        digit_counts = []
+
+        current_digit = None
+        count = 0
+
+        for item in row_1:
+            if isinstance(item, int):
+                if item == current_digit:
+                    count += 1
+                else:
+                    if current_digit is not None:
+                        unique_digits.append(current_digit)
+                        digit_counts.append(count)
+                    current_digit = item
+                    count = 1
+
+        # Добавляем последнюю цифру и ее количество в списки
+        if current_digit is not None:
+            unique_digits.append(current_digit)
+            digit_counts.append(count)
+
+        # Вывод результатов
+        for digit, count in zip(unique_digits, digit_counts):
+            print(f"Цифра: {digit}, Количество: {count}")
+    
         row_2 = []
         for i, _ in enumerate(row_1):
             if row_1[i] == '#':
                 row_2.append('#')
             else:
-                if i != len(row_1)-1:
+                if i < len(row_1)-1:
                     if row_1[i] == row_1[i + 1]:
                         if bool(random.randint(0,1)):
                             row_2.append('#')
@@ -93,7 +118,7 @@ def mazeGenerationFunc(length, width, maze):
         return row_3
         
     # If the length is even
-    if length - 2 % 2 == 0:  
+    if (length - 2) % 2 == 0:  
         for i in range(0, length - 2, 2):
             row_1 = subsetGenerationFunc(row_0)           
         
@@ -131,9 +156,9 @@ def mazeGenerationFunc(length, width, maze):
     for sublist in maze:
         for i in range(len(sublist)):
             if isinstance(sublist[i], int):
-                sublist[i] = 0
-            if sublist[i] == '#':
                 sublist[i] = 1
+            if sublist[i] == '#':
+                sublist[i] = 0
     
     return maze
 
@@ -143,7 +168,7 @@ mazeFinish = mazeGenerationFunc(length, width, maze)
 for sublist in mazeFinish:
     print(''.join(map(str, sublist)))
 
-# Пример списка из подсписков (0 - белый, 1 - черный)
+# Пример списка из подсписков (0 - черный, 1 - белый)
 image_data = mazeFinish
 
 # Размеры изображения
