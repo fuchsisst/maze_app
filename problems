@@ -1,0 +1,7 @@
+1. The exits from the subsets are found only at the end of the subset,
+   this results in an obvious solution that either follows the outer edge
+   or otherwise directly intersects the interior.
+
+2. Problems with the size of the maze, when specifying an even value, it gives an error
+
+3. The method for generating the final line of the maze is not implemented
